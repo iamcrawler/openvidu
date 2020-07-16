@@ -85,7 +85,7 @@ upgrade_ov() {
 
      SEARCH_IN_FOLDERS=(
           "${PWD}"
-          "/opt/${OPENVIDU_FOLDER}"
+          "/codes/${OPENVIDU_FOLDER}"
      )
 
      for folder in "${SEARCH_IN_FOLDERS[@]}"; do
