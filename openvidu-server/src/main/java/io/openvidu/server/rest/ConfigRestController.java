@@ -17,6 +17,8 @@
 
 package io.openvidu.server.rest;
 
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
 import org.apache.http.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,7 @@ import io.openvidu.server.config.OpenviduConfig;
 @RestController
 @CrossOrigin
 @RequestMapping("/config")
+//@Api(tags = "系统参数配置接口",value = "系统参数配置接口")
 public class ConfigRestController {
 
 	private static final Logger log = LoggerFactory.getLogger(ConfigRestController.class);
@@ -54,6 +57,7 @@ public class ConfigRestController {
 	@Autowired
 	private OpenviduBuildInfo openviduBuildInfo;
 
+//	@ApiOperation(value = "获取openvidu版本",notes = "获取openvidu版本")
 	@RequestMapping(value = "/openvidu-version", method = RequestMethod.GET)
 	public String getOpenViduServerVersion() {
 
@@ -62,6 +66,7 @@ public class ConfigRestController {
 		return openviduBuildInfo.getOpenViduServerVersion();
 	}
 
+//	@ApiOperation(value = "获取openvidu公网url",notes = "获取openvidu公网url")
 	@RequestMapping(value = "/openvidu-publicurl", method = RequestMethod.GET)
 	public String getOpenViduPublicUrl() {
 
@@ -70,6 +75,7 @@ public class ConfigRestController {
 		return openviduConfig.getFinalUrl();
 	}
 
+//	@ApiOperation(value = "获取openvidu记录",notes = "获取openvidu记录")
 	@RequestMapping(value = "/openvidu-recording", method = RequestMethod.GET)
 	public Boolean getOpenViduRecordingEnabled() {
 
@@ -78,6 +84,8 @@ public class ConfigRestController {
 		return openviduConfig.isRecordingModuleEnabled();
 	}
 
+
+//	@ApiOperation(value = "获取openvidu记录路径",notes = "获取openvidu记录路径")
 	@RequestMapping(value = "/openvidu-recording-path", method = RequestMethod.GET)
 	public String getOpenViduRecordingPath() {
 
@@ -86,6 +94,7 @@ public class ConfigRestController {
 		return openviduConfig.getOpenViduRecordingPath();
 	}
 
+//	@ApiOperation(value = "openvidu日志是否打开",notes = "openvidu日志是否打开")
 	@RequestMapping(value = "/openvidu-cdr", method = RequestMethod.GET)
 	public Boolean getOpenViduCdrEnabled() {
 
@@ -94,6 +103,7 @@ public class ConfigRestController {
 		return openviduConfig.isCdrEnabled();
 	}
 
+//	@ApiOperation(value = "openvidu所有配置",notes = "openvidu所有配置")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<String> getOpenViduConfiguration() {
 

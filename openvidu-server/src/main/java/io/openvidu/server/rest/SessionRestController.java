@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +68,11 @@ import io.openvidu.server.kurento.core.KurentoTokenOptions;
 import io.openvidu.server.recording.Recording;
 import io.openvidu.server.recording.service.RecordingManager;
 import io.openvidu.server.utils.RecordingUtils;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -74,6 +81,7 @@ import io.openvidu.server.utils.RecordingUtils;
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
+@Api(tags = "session会话中心",value = "session会话中心")
 public class SessionRestController {
 
 	private static final Logger log = LoggerFactory.getLogger(SessionRestController.class);
@@ -87,6 +95,12 @@ public class SessionRestController {
 	@Autowired
 	private OpenviduConfig openviduConfig;
 
+	/**
+	 * 初始化会话(开机自检)
+	 * @param params
+	 * @return
+	 */
+	@ApiOperation(value = "初始化会话(开机自检)",notes = "初始化会话(开机自检)")
 	@RequestMapping(value = "/sessions", method = RequestMethod.POST)
 	public ResponseEntity<?> getSessionId(@RequestBody(required = false) Map<?, ?> params) {
 
@@ -182,6 +196,14 @@ public class SessionRestController {
 		return new ResponseEntity<>(responseJson.toString(), getResponseHeaders(), HttpStatus.OK);
 	}
 
+
+	/**
+	 * 根据 sessionId 检索指定会话信息
+	 * @param sessionId
+	 * @param webRtcStats
+	 * @return
+	 */
+//	@ApiOperation(value = "根据 sessionId 检索指定会话信息",notes = "根据 sessionId 检索指定会话信息")
 	@RequestMapping(value = "/sessions/{sessionId}", method = RequestMethod.GET)
 	public ResponseEntity<?> getSession(@PathVariable("sessionId") String sessionId,
 			@RequestParam(value = "webRtcStats", defaultValue = "false", required = false) boolean webRtcStats) {
@@ -204,6 +226,13 @@ public class SessionRestController {
 		}
 	}
 
+
+	/**
+	 * 获取所有活动会话信息
+	 * @param webRtcStats
+	 * @return
+	 */
+//	@ApiOperation(value = "获取所有活动会话信息",notes = "获取所有活动会话信息")
 	@RequestMapping(value = "/sessions", method = RequestMethod.GET)
 	public ResponseEntity<?> listSessions(
 			@RequestParam(value = "webRtcStats", defaultValue = "false", required = false) boolean webRtcStats) {
@@ -222,6 +251,13 @@ public class SessionRestController {
 		return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);
 	}
 
+
+	/**
+	 * 根据sessionId 删除/关闭会话
+	 * @param sessionId
+	 * @return
+	 */
+//	@ApiOperation(value = "根据sessionId 删除/关闭会话",notes = "根据sessionId 删除/关闭会话")
 	@RequestMapping(value = "/sessions/{sessionId}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> closeSession(@PathVariable("sessionId") String sessionId) {
 
@@ -264,9 +300,19 @@ public class SessionRestController {
 		}
 	}
 
+
+	/**
+	 * 强制用户与会话断开
+	 * @param sessionId
+	 * @param participantPublicId
+	 * @return
+	 */
+//	@ApiOperation(value = "强制用户与会话断开",notes = "强制用户与会话断开")
 	@RequestMapping(value = "/sessions/{sessionId}/connection/{connectionId}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> disconnectParticipant(@PathVariable("sessionId") String sessionId,
-			@PathVariable("connectionId") String participantPublicId) {
+	public ResponseEntity<?> disconnectParticipant(
+			@PathVariable("sessionId") String sessionId,//会话id
+			@PathVariable("connectionId") String participantPublicId//用户id
+	) {
 
 		log.info("REST API: DELETE /api/sessions/{}/connection/{}", sessionId, participantPublicId);
 
@@ -284,6 +330,14 @@ public class SessionRestController {
 		}
 	}
 
+
+	/**
+	 * 强制从会话中取消发布用户流
+	 * @param sessionId
+	 * @param streamId
+	 * @return
+	 */
+//	@ApiOperation(value = "强制从会话中取消发布用户流",notes = "强制从会话中取消发布用户流")
 	@RequestMapping(value = "/sessions/{sessionId}/stream/{streamId}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> unpublishStream(@PathVariable("sessionId") String sessionId,
 			@PathVariable("streamId") String streamId) {
@@ -317,9 +371,21 @@ public class SessionRestController {
 		}
 	}
 
+
+	/**
+	 * 生成令牌(开机自检)
+	 * @param params
+	 * @return
+	 */
+//	@ApiOperation(value = "生成令牌(开机自检)",notes = "生成令牌(开机自检)")
 	@RequestMapping(value = "/tokens", method = RequestMethod.POST)
 	public ResponseEntity<String> newToken(@RequestBody Map<?, ?> params) {
+		RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+		RequestContextHolder.getRequestAttributes();
+		//从session里面获取对应的值
+		String str = (String) requestAttributes.getAttribute("name",RequestAttributes.SCOPE_SESSION);
 
+		HttpServletRequest request = ((ServletRequestAttributes)requestAttributes).getRequest();
 		if (params == null) {
 			return this.generateErrorResponse("Error in body parameters. Cannot be empty", "/api/tokens",
 					HttpStatus.BAD_REQUEST);
@@ -438,6 +504,13 @@ public class SessionRestController {
 		}
 	}
 
+
+	/**
+	 * 开始记录会话
+	 * @param params
+	 * @return
+	 */
+//	@ApiOperation(value = "开始记录会话",notes = "开始记录会话")
 	@RequestMapping(value = "/recordings/start", method = RequestMethod.POST)
 	public ResponseEntity<?> startRecordingSession(@RequestBody Map<?, ?> params) {
 
@@ -585,6 +658,13 @@ public class SessionRestController {
 		}
 	}
 
+
+	/**
+	 * 停止记录会话
+	 * @param recordingId
+	 * @return
+	 */
+//	@ApiOperation(value = "停止记录会话",notes = "停止记录会话")
 	@RequestMapping(value = "/recordings/stop/{recordingId}", method = RequestMethod.POST)
 	public ResponseEntity<?> stopRecordingSession(@PathVariable("recordingId") String recordingId) {
 
@@ -621,6 +701,13 @@ public class SessionRestController {
 		return new ResponseEntity<>(stoppedRecording.toJson().toString(), getResponseHeaders(), HttpStatus.OK);
 	}
 
+
+	/**
+	 * 获取记录信息
+	 * @param recordingId
+	 * @return
+	 */
+//	@ApiOperation(value = "获取记录信息",notes = "获取记录信息")
 	@RequestMapping(value = "/recordings/{recordingId}", method = RequestMethod.GET)
 	public ResponseEntity<?> getRecording(@PathVariable("recordingId") String recordingId) {
 
@@ -638,6 +725,12 @@ public class SessionRestController {
 		}
 	}
 
+
+	/**
+	 * 获取所有录音信息
+	 * @return
+	 */
+//	@ApiOperation(value = "获取所有录音信息",notes = "获取所有录音信息")
 	@RequestMapping(value = "/recordings", method = RequestMethod.GET)
 	public ResponseEntity<?> getAllRecordings() {
 
@@ -658,6 +751,13 @@ public class SessionRestController {
 		return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);
 	}
 
+
+	/**
+	 * 删除录音
+	 * @param recordingId
+	 * @return
+	 */
+//	@ApiOperation(value = "删除录音",notes = "删除录音")
 	@RequestMapping(value = "/recordings/{recordingId}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteRecording(@PathVariable("recordingId") String recordingId) {
 
@@ -666,6 +766,13 @@ public class SessionRestController {
 		return new ResponseEntity<>(this.recordingManager.deleteRecordingFromHost(recordingId, false));
 	}
 
+
+	/**
+	 * 向会话发送信号
+	 * @param params
+	 * @return
+	 */
+//	@ApiOperation(value = "向会话发送信号",notes = "向会话发送信号")
 	@RequestMapping(value = "/signal", method = RequestMethod.POST)
 	public ResponseEntity<?> signal(@RequestBody Map<?, ?> params) {
 
@@ -736,6 +843,14 @@ public class SessionRestController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+
+	/**
+	 * 从IP摄像机发布流
+	 * @param sessionId
+	 * @param params
+	 * @return
+	 */
+//	@ApiOperation(value = "从IP摄像机发布流",notes = "从IP摄像机发布流")
 	@RequestMapping(value = "/sessions/{sessionId}/connection", method = RequestMethod.POST)
 	public ResponseEntity<?> publishIpcam(@PathVariable("sessionId") String sessionId, @RequestBody Map<?, ?> params) {
 

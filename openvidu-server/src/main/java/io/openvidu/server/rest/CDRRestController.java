@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +44,13 @@ import com.google.gson.JsonArray;
 import io.openvidu.server.config.OpenviduConfig;
 
 /**
- *
+ *CDR日志记录系统
  * @author Pablo Fuente (pablofuenteperez@gmail.com)
  */
 @RestController
 @CrossOrigin
 @RequestMapping("/cdr")
+//@Api(tags = "CDR日志记录系统",value = "CDR日志记录系统")
 public class CDRRestController {
 
 	private static final Logger log = LoggerFactory.getLogger(CDRRestController.class);
@@ -55,6 +58,7 @@ public class CDRRestController {
 	@Autowired
 	protected OpenviduConfig openviduConfig;
 
+//	@ApiOperation(value = "获取日志数据",notes = "获取日志数据")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<String> listCdrFiles() {
 
